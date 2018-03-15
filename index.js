@@ -19,6 +19,6 @@ client.registry
 
 client.on('ready', () => {
     console.log('Logged in!');
-    client.user.setActivity('чат', {ActivityType: 'LISTENING'});
+    client.user.setActivity('чат', { type: 'LISTENING' });
 });
 client.login(__CONFIG__.token);
