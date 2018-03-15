@@ -67,17 +67,25 @@ module.exports = class StaffballsCommand extends Command {
             let mentions = message.mentions.members;
             members.forEach((item) => {
                 if (!item.user.bot) {
-                    mentions.forEach((user) => {
-                        if(user.user.id !== item.user.id) {
-                            allMembers.push(
-                                {
-                                    userNick: item.user.username,
-                                    userId: item.user.id
-                                }
-                            )
-                        }
-                    })
-
+                    if(mentions.length > 0) {
+                        mentions.forEach((user) => {
+                            if(user.user.id !== item.user.id) {
+                                allMembers.push(
+                                    {
+                                        userNick: item.user.username,
+                                        userId: item.user.id
+                                    }
+                                )
+                            }
+                        })
+                    } else {
+                        allMembers.push(
+                            {
+                                userNick: item.user.username,
+                                userId: item.user.id
+                            }
+                        )
+                    }
                 }
             });
             return allMembers;
@@ -116,12 +124,13 @@ module.exports = class StaffballsCommand extends Command {
 
         let args = message.parseArgs(message.argString);
 
-        let throwThing = args[0] || 'снежок';
-        let targetUser = args[1] || 'себя';
         let members = message.guild.members;
         let activeMembers = this.getActiveMembers(members, message);
         let allMembers = this.getAllMembers(members, message);
         let activeMembersCount = activeMembers.length;
+
+        let throwThing = args[0] || 'снежок';
+        let targetUser = args[1] || '<@' + allMembers[this.randomInteger(0, allMembers.length - 1)].userId + '>';
 
         if (activeMembersCount > 0) {
             positiveOrNegative = this.getRandomDecision();
@@ -135,7 +144,7 @@ module.exports = class StaffballsCommand extends Command {
         textData.username = message.author.username;
         textData.thing = throwThing;
         textData.otherUser = targetUser;
-        textData.somebody = allMembers.length > 0 ? allMembers[this.randomInteger(0, allMembers.length - 1)].userId : 'себя';
+        textData.somebody = allMembers.length > 0 ? allMembers[this.randomInteger(0, allMembers.length - 1)].userId : 'себе';
 
         formattedResultMessage = this.formatMessage(resultMessage, textData);
 
